@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.1.0/math.js"
+        integrity="sha512-I3BR04+2bI75SNyY+c6cJWCUuseVbX1Zn952KS2Lw6+VKuZSA4tXkX5Py+T8N2I9SMT2+iQkE6eSISbhNxBMmw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+
+<body>
+
+    <script>
+        let canv = document.createElement("canvas")
+        canv.style.backgroundColor = "#ddd"
+
+        canv_width = 400
+        canv_height = 400
+
+        canv.width = canv_width
+        canv.height = canv_height
+
+        document.body.append(canv)
+        let ctx = canv.getContext('2d')
+
+        // Area in which we draw
+        let window_left = -2
+        let window_right = 2
+        let window_bottom = -2
+        let window_top = 2
+
+        function redraw() {
+            ctx.clearRect(0, 0, canv_width, canv_height)
+
+            let unit_x = canv_width / (window_right - window_left)
+            let unit_y = canv_height / (window_top - window_bottom)
+
+            function world_to_display_coord_x(x) {
+                return (-window_left + x) * unit_x
+            }
+
+            function world_to_display_coord_y(y) {
+                return (window_top - y) * unit_y
+            }
+
+            function d_line(p1, p2) {
+                ctx.beginPath()
+                ctx.moveTo(world_to_display_coord_x(p1.x), world_to_display_coord_y(p1.y))
+                ctx.lineTo(world_to_display_coord_x(p2.x), world_to_display_coord_y(p2.y))
+                ctx.stroke()
+            }
+
+            function d_circle(p, size = .5) {
+                ctx.beginPath()
+                ctx.arc(world_to_display_coord_x(p.x), world_to_display_coord_y(p.y), size, 0, 2 * Math.PI)
+                ctx.stroke()
+            }
+
+            function d_text(p, text) {
+                ctx.beginPath()
+                ctx.font = "25px sans-serif";
+                ctx.strokeText(text, world_to_display_coord_x(p.x), world_to_display_coord_y(p.y))
+            }
+
+            // Axis
+            d_line({ x: window_left, y: 0 }, { x: window_right, y: 0 })
+            d_line({ x: 0, y: window_top }, { x: 0, y: window_bottom })
+
+
+            // Sigmoid
+            for (let x = window_left; x < window_right; x += .01) {
+                d_circle({ x: x, y: (Math.exp(x)) / (Math.exp(x) + 1) })
+            }
+
+            d_text({ x: .5, y: -1 }, "Sigmoid")
+
+        }
+
+        redraw()
+
+        let text_out = 1
+
+        setInterval(function () {
+            redraw()
+            text_out += 1
+        }, 1000)
+
+    </script>
+</body>
+
+</html>

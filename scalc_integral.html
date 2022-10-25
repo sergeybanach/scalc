@@ -27,6 +27,7 @@
         document.body.append(canv)
         let ctx = canv.getContext('2d')
 
+        // Area in which we draw
         let window_left = -2
         let window_right = 2
         let window_bottom = -2
@@ -65,30 +66,16 @@
                 ctx.strokeText(text, world_to_display_coord_x(p.x), world_to_display_coord_y(p.y))
             }
 
-            function matrix2x2_mult(M, p) {
-                return {
-                    x: M.a11 * p.x + M.a12 * p.y,
-                    y: M.a21 * p.x + M.a22 * p.y
-                }
-            }
-
             // matrix example
             let M2x2_example = {
                 a11: 1, a12: 2,
                 a21: 3, a22: 4,
             }
 
-            let M3x3_example = {
-                a11: 1, a12: 2, a13: 3,
-                a21: 4, a22: 5, a23: 6,
-                a31: 7, a32: 8, a33: 9,
-            }
-
-            function matrix3x3_mult(M, p) {
+            function matrix2x2_mult(M, p) {
                 return {
-                    x: M.a11 * p.x + M.a12 * p.y + M.a13 * p.z,
-                    y: 0,
-                    z: 0,
+                    x: M.a11 * p.x + M.a12 * p.y,
+                    y: M.a21 * p.x + M.a22 * p.y
                 }
             }
 
@@ -104,13 +91,14 @@
             d_line({ x: window_left, y: 0 }, { x: window_right, y: 0 })
             d_line({ x: 0, y: window_top }, { x: 0, y: window_bottom })
 
+            // Integral
+            let f = x => x*x
 
-            // Sigmoid
-            for (let x = window_left; x < window_right; x += .01) {
-                d_circle({ x: x, y: (Math.exp(x)) / (Math.exp(x) + 1) })
+            for(let x = window_left; x < window_right; x += .01 ) {
+                let fixed_point = -1
+                let y = integral(f, fixed_point, x)
+                d_circle({ x: x, y: y })
             }
-
-            d_text({ x: 0, y: 0 }, String(text_out))
 
         }
 
